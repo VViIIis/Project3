@@ -1,18 +1,25 @@
-/ Step 1:
+/* Step 1:
 / Determine 
 / wallet owners, number of wallets, funtions needed, 
-/ Step 2: 
-/ code 
+/ Step 2: code
+*/  
 
 pragma solidity ^0.5.5;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC721/ERC721Full.sol";
 contract ShippingToken is ERC721Full {
 
     address payable TokenOwner;
+    address admin;
     mapping(uint256=>uint256) current_bid;
     string public symbol = "SHIP";
+    bool approvetransfer = false;
+    uint public amount;
     
-    constructor() public ERC721Full("Certificate", "CERT"){}
+    constructor(address TokenAdmin, uint256 TokenAmount ) public ERC721Full("Certificate", "CERT"){
+        admin = TokenAdmin;
+        amount = TokenAmount;
+        }
+    
     function createToken(string memory tokenURI) public {
         uint256 tokenCount=totalSupply();
         uint256 newTokenId=tokenCount;
@@ -33,14 +40,16 @@ contract ShippingToken is ERC721Full {
         return ShippingToken(TokenOwner).ownerOf(newTokenId);
     }
     
-    function approve(msg.sender, uint tokens) public returns (bool success) {
+    function approve(uint tokens) public returns (bool success) {
+        require (msg.sender == admin);
+         /* makes it so only admin (3rd party) can call*/
+        approvetransfer = true;
         require (sender == getTokenOwner());
-        
-
 
         /* is there a third party? or is it sender or receiver approving? */
-
     }
+/* have a set address fo approver, have that address call the transfer function, only that address can call this function*/ 
+
 
     /*function transferFrom(address from, address to, uint tokens) public returns (bool success);*/
 
@@ -53,10 +62,13 @@ contract ShippingToken is ERC721Full {
         return current_bid[bid_token_id];
     
      function transfer(msg.sender, address recipient, uint amount) public payable {
+        require approvetransfer == true;
         uint amount = msg.value * exchange_rate;
         balances[msg.sender] = balances[msg.sender].sub(amount);
         balances[recipient] = balances[recipient].add(amount);
-        return balances, string "Congratulations, transaction complete"
+        string message = "Congratulations, transaction complete";
+        approvetransfer = false;
+        return balances, message
     }
 
     /*function verify(address recipient, address sender, uint) public {
