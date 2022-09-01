@@ -24,7 +24,7 @@ w3 = Web3(Web3.HTTPProvider(os.getenv("WEB3_PROVIDER_URI")))
 def load_contract():
 
     # Load the contract ABI
-    with open(Path('./contracts/compiled/shippingtoken_abi.json')) as f:
+    with open(Path('./contracts/compiled/shipping_abi.json')) as f:
         contract_abi = json.load(f)
 
     # Set the contract address (this is the address of the deployed contract)
@@ -40,7 +40,7 @@ def load_contract():
 
 
 # Load the contract
-#contract = load_contract()
+contract = load_contract()
 
 ################################################################################
 # Helper functions to pin files and json to Pinata
@@ -83,8 +83,8 @@ st.markdown("## NIFTY Global Create Shipment")
 shipment_name = st.text_input("Enter the name of the shipment")
 origin_address = st.text_input("Enter the pickup location")
 destination_address = st.text_input("Enter the dropoff location")
-shipment_weight = st.number_input("Enter the shipment weight")
-num_packages= st.number_input("Enter the number of packages in this shipment")
+shipment_weight = st.number_input("Enter the shipment weight",value=1)
+num_packages= st.number_input("Enter the number of packages in this shipment",value=1)
 
 # initial_appraisal_value = st.text_input("Enter the initial appraisal amount")
 packingList_uri = st.file_uploader("Packing List", type=["jpg", "jpeg", "png", "pdf"])
@@ -93,17 +93,17 @@ insurance_policy_uri=""
 if st.button("Create Shipment"):
     plist_ipfs_hash = pin_artwork(shipment_name, packingList_uri)
     plist_uri = f"ipfs://{plist_ipfs_hash}"
-    #tx_hash = contract.functions.registerShipment(
-        #address,
-        #shipment_name,
-        #origin_address,
-        #destination_address,
-        #shipment_weight,
-        #num_packages,
-        #plist_uri,
-        #insurance_policy_uri
-    #).transact({'from': address, 'gas': 1000000})
-    #receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+    tx_hash = contract.functions.registerShipment(
+        address,
+        shipment_name,
+        origin_address,
+        destination_address,
+        shipment_weight,
+        num_packages,
+        plist_uri,
+        insurance_policy_uri
+    ).transact({'from': address, 'gas': 1000000})
+    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Shipment Created")
     #st.write(dict(receipt))
     st.write("You can view the pinned metadata file with the following IPFS Gateway Link")
@@ -121,7 +121,8 @@ print(company_df)
 option = st.selectbox(
      'Transfer Shipment to?',
      company_df.index)
-
+print (company_df.loc[option]['Wallet'])
+contract.functions.transferFrom(address,company_df.loc[option]['Wallet'],2)
 
 st.write('You selected:', option)
 st.write('wallet:  ', company_df.loc[option]['Wallet'])
