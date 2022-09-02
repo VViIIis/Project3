@@ -87,7 +87,7 @@ contract ShippingToken is ERC721Full {
         return ShippingToken(TokenOwner).ownerOf(newTokenId);
     }
     
-    function balanceOf(address owner) public returns (uint256 balance)
+    /* function balanceOf(address owner) public returns (uint256 balance) */
 
     function approve(uint tokens) public returns (bool success) {
         require (msg.sender == admin);
