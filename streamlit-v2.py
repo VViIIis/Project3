@@ -105,7 +105,7 @@ if st.button("Create Shipment"):
     ).transact({'from': address, 'gas': 1000000})
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
     st.write("Shipment Created")
-    #st.write(dict(receipt))
+    st.write(dict(receipt))
     st.write("You can view the pinned metadata file with the following IPFS Gateway Link")
     st.markdown(f"[IPFS Gateway Link](https://ipfs.io/ipfs/{plist_ipfs_hash})")
 st.markdown("---")
@@ -117,61 +117,66 @@ st.markdown("---")
 st.markdown("## Transfer Shipment")
 company_df=pd.read_csv(
     Path("./Company_list.csv"), index_col="company_name")
-print(company_df)
+#print(company_df)
+num_ship=contract.functions.totalSupply().call()
+print(num_ship)
+pick_ship=st.selectbox("Choose Shipment to Transfer", list(range(num_ship)))
+st.write(f'shipment Picked: {pick_ship}')
+shipOwnerWallet=contract.functions.ownerOf(pick_ship).call()
+shipOwner=company_df[company_df['Wallet']==shipOwnerWallet].index.values
+st.write (f'Currently Shipment is with {shipOwner}')
+st.write (f'Owner Wallet : {shipOwnerWallet}')
 option = st.selectbox(
      'Transfer Shipment to?',
      company_df.index)
-print (company_df.loc[option]['Wallet'])
-contract.functions.transferFrom(address,company_df.loc[option]['Wallet'],2)
+#print (company_df.loc[option]['Wallet'])
+#contract.functions.transferFrom(shipOwnerWallet,company_df.loc[option]['Wallet'],pick_ship)
 
 st.write('You selected:', option)
 st.write('wallet:  ', company_df.loc[option]['Wallet'])
 
-#tokens = contract.functions.totalSupply().call()
-#token_id = st.selectbox("Choose an Art Token ID", list(range(tokens)))
-#new_appraisal_value = st.text_input("Enter the new appraisal amount")
-#appraisal_report_content = st.text_area("Enter details for the Appraisal Report")
+
 if st.button("Transfer Shipment"):
-
-    # Use Pinata to pin an appraisal report for the report URI
-    appraisal_report_ipfs_hash =  pin_appraisal_report(appraisal_report_content)
-    report_uri = f"ipfs://{appraisal_report_ipfs_hash}"
-
-    # Use the token_id and the report_uri to record the appraisal
-    tx_hash = contract.functions.newAppraisal(
-        token_id,
-        int(new_appraisal_value),
-        report_uri
-    ).transact({"from": w3.eth.accounts[0]})
-    receipt = w3.eth.waitForTransactionReceipt(tx_hash)
-    st.write(receipt)
+    contract.functions.transferFrom(shipOwnerWallet,company_df.loc[option]['Wallet'],pick_ship).transact({'from': shipOwnerWallet, 'gas': 1000000})
+   
 st.markdown("---")
 
 ################################################################################
-# Get Appraisals
+# List all Shipments
 ################################################################################
-st.markdown("## Get the appraisal report history")
-art_token_id = st.number_input("Artwork ID", value=0, step=1)
-if st.button("Get Appraisal Reports"):
-    appraisal_filter = contract.events.Appraisal.createFilter(
-        fromBlock=0, argument_filters={"tokenId": art_token_id}
-    )
-    reports = appraisal_filter.get_all_entries()
-    if reports:
-        for report in reports:
-            report_dictionary = dict(report)
-            st.markdown("### Appraisal Report Event Log")
-            st.write(report_dictionary)
-            st.markdown("### Pinata IPFS Report URI")
-            report_uri = report_dictionary["args"]["reportURI"]
-            report_ipfs_hash = report_uri[7:]
-            st.markdown(
-                f"The report is located at the following URI: "
-                f"{report_uri}"
-            )
-            st.write("You can also view the report URI with the following ipfs gateway link")
-            st.markdown(f"[IPFS Gateway Link](https://ipfs.io/ipfs/{report_ipfs_hash})")
-            st.markdown("### Appraisal Event Details")
-            st.write(report_dictionary["args"])
-    else:
-        st.write("This artwork has no new appraisals")
+st.markdown("## List all Shipments")
+if st.button("List All Shipments"):
+
+    tokens = contract.functions.totalSupply().call()
+    for token in range (tokens):
+        tokenOwner=contract.functions.ownerOf(token).call()
+        print(tokenOwner)
+        st.write(token, tokenOwner)
+st.markdown("---")
+################################################################################
+# Inspect Shipments
+# ################################################################################
+st.markdown("## Inspect Shipment")
+num_shipments=contract.functions.totalSupply().call()
+print(num_shipments)
+st.write(f' Total number of Shipments in transit {num_shipments}')
+current_shipment_id= st.selectbox("Choose Shipment", list(range(num_shipments)))
+current_shipment=contract.functions.TotalShipment(current_shipment_id).call()
+st.write(current_shipment)
+
+st.write(f'Shipment Name: {current_shipment[0]}')
+st.write(f'Picked up from (origin): {current_shipment[1]}')
+st.write(f'Final Destination: {current_shipment[2]}')
+st.write(f'Shipment Weight: {current_shipment[3]}')
+st.write(f'Number of  Packages in Shipment: {current_shipment[4]}')
+st.write(f'Shipping Documents can be viewed at : {current_shipment[5]}')
+st.write(f'Insurance Documents can be viewed at : {current_shipment[6]}')
+
+shipmentOwnerWallet=contract.functions.ownerOf(current_shipment_id).call()
+shipmentOwner=company_df[company_df['Wallet']==shipmentOwnerWallet].index.values
+#print(df[df[‘Name’]==’Donna’].index.values)
+st.write(f'This shipment is in Transit, Currently with {shipmentOwner}')
+
+st.markdown("---")
+
+
