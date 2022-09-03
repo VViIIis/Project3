@@ -1,7 +1,7 @@
 # Shipping Token
 Project 3
 
-## A blockchain based platform for secure booking, tracking and Management of Freight shipments across the globe 
+## A blockchain based platform for secure booking, tracking and management of freight shipments across the globe 
 - Based on the Ethereum network 
 - Use of smart contracts
 
