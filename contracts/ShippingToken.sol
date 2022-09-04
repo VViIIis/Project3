@@ -8,19 +8,8 @@ pragma solidity ^0.5.5;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC721/ERC721Full.sol";
 contract ShippingToken is ERC721Full {
 
-    address payable TokenOwner;
-    address admin;
-    mapping(uint256=>uint256) current_bid;
-    string public symbol = "SHIP";
-    bool approvetransfer = false;
-    uint public amount;
-    uint256 tokenId;
-    string tokenURI;
-    
-    constructor(address TokenAdmin, uint) public ERC721Full("Certificate", "CERT"){
-        admin = TokenAdmin; 
-        amount = 100; /*value of order for insurance*/
-        }
+   
+    constructor() public ERC721Full("Certificate", "CERT"){}
 
     struct Shipment {
     string shipment_name;
@@ -31,13 +20,15 @@ contract ShippingToken is ERC721Full {
     string plist_uri;
     string insurance_policy_uri;
     }
-
+ //   mapping(uint256 => Shipment) public allShipments;
+/*
     function createToken(string memory tokenURI) public {
         uint256 tokenCount=totalSupply();
         uint256 newTokenId=tokenCount;
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
     }
+*/
 
 /* have to have original owner, the when transfering, need to get owner (sender)
  at what point does ownership transfers */
@@ -48,7 +39,7 @@ contract ShippingToken is ERC721Full {
         return TokenOwner
     }*/
 
-    mapping(bytes32 => string) public requestIdToTokenURI;
+ /*   mapping(bytes32 => string) public requestIdToTokenURI;
 
     function setTokenURI(uint256 tokenId, string memory tokenURI) public {
         require (_isApprovedOrOwner(msg.sender)(), tokenId);
@@ -56,10 +47,11 @@ contract ShippingToken is ERC721Full {
         
     }
 
-    /*function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
         require(_exists(tokenId), "URI set of nonexistent token");
         _tokenURIs[tokenId] = _tokenURI;
-    }*/
+    }
+*/
 
     mapping(uint256 => Shipment) public TotalShipment;
 
@@ -76,13 +68,13 @@ contract ShippingToken is ERC721Full {
         uint256 tokenId = totalSupply();
 
         _mint(owner, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, plist_uri);
 
-        TotalShipment[tokenId] = Shipment(TokenOwner, shipment_name, destination_address, num_packages);
+        TotalShipment[tokenId] = Shipment(shipment_name, origin_address, destination_address, shipment_weight, num_packages, plist_uri,insurance_policy_uri);
 
         return tokenId;
     }
-
+/*
     function getTokenOwner(address TokenOwner, uint256 newTokenId) external view returns (address){
         return ShippingToken(TokenOwner).ownerOf(newTokenId);
     }
@@ -91,11 +83,11 @@ contract ShippingToken is ERC721Full {
 
     function approve(uint tokens) public returns (bool success) {
         require (msg.sender == admin);
-         /* makes it so only admin (3rd party) can call*/
+         /* makes it so only admin (3rd party) can call
         approvetransfer = true;
         require (sender == getTokenOwner());
 
-        /* is there a third party? or is it sender or receiver approving? */
+        /* is there a third party? or is it sender or receiver approving?
     }
 
 /* have a set address fo approver, have that address call the transfer function, only that address can call this function*/ 
