@@ -1,12 +1,12 @@
-# Shipping Token
+NFTY Shipping Token
 Project 3
 
-## A blockchain based platform for secure booking, tracking and management of freight shipments across the globe 
+## A blockchain based platform for secure booking, tracking and management of shipments across the globe 
 - Based on the Ethereum network 
 - Use of smart contracts
 
 Goal: 
-Track shipments around the world  from point A to point B by making an NFT for each shipment. 
+Track shipments around the world from point A to point B by making an NFT for each shipment. 
 
 # Background
 
@@ -27,10 +27,18 @@ Using an NFT token to represent a shipment and multiple wallets representing log
 6. Remix
 8. ERC271
 
+# Imports
+
+"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC721/ERC721Full.sol";
+
+# User Instructionss
+
+Run python file in streamlit. This displays an interface that allows you to create a shipment and enter specific shipment details. Then the shipment can be moved and tracked on the blockchain as it makes its progress to the final destination. 
+
 # Key Assumptions
 1. A real system like this would require use of smart sensors and GPS devices on the shipment. For this project we will not have the time and the financial resources required to implement the tracking of location and condition of goods during transit
 
-2. The insurance provider is the 3rd party verifier 
+2. The insurance provider is the 3rd party verifier. An insurance mechanism could be added to the product.
 
 
 # Next Steps
@@ -40,3 +48,4 @@ If we had the $$$$$$$$$$$$
 2. Put monitoring systems in place
 3. Create company roadmap
 4. Change the shipment tracking industry for good
+
