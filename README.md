@@ -35,6 +35,8 @@ Using an NFT token to represent a shipment and multiple wallets representing log
 
 Run python file in streamlit. This displays an interface that allows you to create a shipment and enter specific shipment details. Then the shipment can be moved and tracked on the blockchain as it makes its progress to the final destination. 
 
+Another version of the application is to run Homepage.py. This displays the same as above in details, but functions are listed as each page on the main page.
+
 # Key Assumptions
 1. A real system like this would require use of smart sensors and GPS devices on the shipment. For this project we will not have the time and the financial resources required to implement the tracking of location and condition of goods during transit
 
